@@ -1,11 +1,18 @@
+import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Button, StyleSheet, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Chats = () => {
+  const router = useRouter();
   return (
-    <View>
+    <SafeAreaView>
       <Text>Chats</Text>
-    </View>
+      <Button
+        title="open chat screen"
+        onPress={() => router.push("/(app)/(protected)/chat_screen")}
+      />
+    </SafeAreaView>
   );
 };
 

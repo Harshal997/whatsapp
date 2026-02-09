@@ -1,16 +1,18 @@
 import ScreenContainer from "@/components/screenContainer";
-import SigninForm from "@/components/sign-in-form";
+import SignupForm from "@/components/sign-up-form";
 import React from "react";
-import { Image, StyleSheet } from "react-native";
+import { Image, ScrollView, StyleSheet } from "react-native";
 
 const login = () => {
   return (
     <ScreenContainer>
-      <Image
-        source={require("../../../../assets/images/logo.jpg")}
-        style={styles.image}
-      />
-      <SigninForm />
+      <ScrollView style={{ flex: 1, paddingBottom: 20 }}>
+        <Image
+          source={require("../../../../assets/images/logo.jpg")}
+          style={styles.image}
+        />
+        <SignupForm />
+      </ScrollView>
     </ScreenContainer>
   );
 };

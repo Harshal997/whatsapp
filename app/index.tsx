@@ -35,7 +35,10 @@ const Index = () => {
   const handleNavigation = async () => {
     // await new Promise((resolve) => setTimeout(() => resolve, 2000));
     await Splashscreen.hideAsync();
-    router.replace("/(app)/(protected)/(chat)/chats");
+    if (true) {
+      router.replace("/(app)/(public)/(auth)/login");
+      return;
+    }
   };
 
   const hasAppLoaded = useCallback(async () => {
