@@ -1,5 +1,5 @@
 import colors from "@/constants/colors";
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -13,11 +13,14 @@ interface Props {
   icon: any;
   error: string;
   id: string;
+  initialValue?: string;
   onChangeText: (inputId: string, inputVal: string) => void;
 }
 
 const Input = (props: Props & TextInputProps) => {
+  const [value, setValue] = useState(props.initialValue ?? "");
   const onInputChange = (text: string) => {
+    setValue(text);
     props.onChangeText(props.id, text);
   };
   return (
@@ -28,6 +31,7 @@ const Input = (props: Props & TextInputProps) => {
         <TextInput
           {...props}
           onChangeText={onInputChange}
+          value={value}
           style={styles.inputStyle}
         />
       </View>

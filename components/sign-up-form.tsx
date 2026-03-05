@@ -12,6 +12,7 @@ import {
   StyleSheet,
   Text,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "./button";
 import Input from "./input";
 
@@ -33,6 +34,9 @@ const initialState = {
 
 const SignupForm = () => {
   const [formState, dispatchFormState] = useReducer(reducer, initialState);
+  const dispatch = useDispatch();
+  const x = useSelector((state) => state.authReducer);
+  console.log("Selector", x);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const onInputChanged = useCallback(
@@ -52,13 +56,15 @@ const SignupForm = () => {
   const authenticate = async () => {
     try {
       setLoading(true);
-      await signUp(
+      const action = await signUp(
         formState.inputValues.firstName,
         formState.inputValues.lastName,
         formState.inputValues.email,
         formState.inputValues.mobile,
       );
+      await dispatch(action);
       setError(null);
+      router.replace("/(app)/(protected)/(chat)/chats");
     } catch (e) {
       console.log("signup error: ", e.message);
       setError(e.message);

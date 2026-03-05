@@ -4,8 +4,15 @@ import { validateInput } from "@/utils/actions/formActions";
 import { reducer } from "@/utils/reducers/formReducer";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useCallback, useReducer } from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
+import React, { useCallback, useEffect, useReducer, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+} from "react-native";
+import { useDispatch } from "react-redux";
 import Button from "./button";
 import Input from "./input";
 
@@ -24,6 +31,8 @@ const initialState = {
 const SigninForm = () => {
   const router = useRouter();
   const [formState, dispatchFormState] = useReducer(reducer, initialState);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const onInputChanged = useCallback(
     (inputId: string, inputVal: string) => {
       const res = validateInput(inputId, inputVal);
@@ -31,9 +40,30 @@ const SigninForm = () => {
     },
     [dispatchFormState],
   );
+  const dispatch = useDispatch();
 
-  const authenticate = () => {
-    signIn(formState.inputValues.email, formState.inputValues.mobile);
+  useEffect(() => {
+    if (!error) return;
+    error && Alert.alert("Error encountered", error!);
+    setError(null);
+  }, [error]);
+
+  const authenticate = async () => {
+    setLoading(true);
+    try {
+      const action = await signIn(
+        formState.inputValues.email,
+        formState.inputValues.mobile,
+      );
+      await dispatch(action);
+      setError(null);
+      router.replace("/(app)/(protected)/(chat)/chats");
+    } catch (e) {
+      console.log("signin error: ", e.message);
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -56,11 +86,19 @@ const SigninForm = () => {
         error={formState.inputFields["mobile"]}
         onChangeText={onInputChanged}
       />
-      <Button
-        title="Sign in"
-        disabled={!formState.formIsValid}
-        onPress={authenticate}
-      />
+      {loading ? (
+        <ActivityIndicator
+          color={colors.primary}
+          size={"small"}
+          style={{ marginVertical: 16 }}
+        />
+      ) : (
+        <Button
+          title="Sign up"
+          disabled={!formState.formIsValid}
+          onPress={authenticate}
+        />
+      )}
       <Pressable
         style={styles.link}
         onPress={() => router.replace("/(app)/(public)/(auth)/signup")}

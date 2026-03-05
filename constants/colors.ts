@@ -6,4 +6,6 @@ export default {
   textColor: "#1C1E21",
   primary: "#32D48E",
   link: "#5495FF",
+  red: "#E74C3C",
+  beige: "#D9BB9B",
 };
