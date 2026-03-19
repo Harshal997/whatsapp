@@ -10,9 +10,15 @@ const chatsSlice = createSlice({
   },
   reducers: {
     storeAllChats: (state, action) => {
-      state.chats = action.payload.chats;
-      state.privateKeys = action.payload.privateKeys;
-      state.userStarredMessages = action.payload.starredMessages;
+      if (action.payload?.chats) {
+        state.chats = action.payload.chats;
+      }
+      if (action.payload?.privateKeys) {
+        state.privateKeys = action.payload.privateKeys;
+      }
+      if (action.payload?.starredMessages) {
+        state.userStarredMessages = action.payload.starredMessages;
+      }
       state.loading = false;
     },
   },

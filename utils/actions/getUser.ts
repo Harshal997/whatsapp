@@ -28,7 +28,7 @@ export const searchUsers = async (search: string) => {
 
     const queryRef = query(
       userRef,
-      orderByChild("firstName"),
+      orderByChild("fullName"),
       startAt(searchTerm),
       endAt(searchTerm + "\uf8ff"),
     );
