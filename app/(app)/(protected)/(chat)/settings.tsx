@@ -1,5 +1,5 @@
 import colors from "@/constants/colors";
-import { updateUser } from "@/utils/actions/authActions";
+import { removePushToken, updateUser } from "@/utils/actions/authActions";
 import { validateInput } from "@/utils/actions/formActions";
 import { reducer } from "@/utils/reducers/formReducer";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
@@ -20,10 +20,10 @@ import ProfileImage from "@/components/profile-image";
 import ScreenContainer from "@/components/screenContainer";
 import { save } from "@/store/authSlice";
 import { logoutUser } from "@/store/authThunk";
+import { supabase } from "@/supabaseClient";
 
 const SignupForm = () => {
   const user = useSelector((state) => state.auth.userData);
-  console.log("Selector", user);
   const initialState = {
     inputValues: {
       firstName: user?.firstName,
@@ -39,10 +39,10 @@ const SignupForm = () => {
   };
 
   const [formState, dispatchFormState] = useReducer(reducer, initialState);
-  console.log("formstate", formState);
   const dispatch = useDispatch();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<null | boolean>(null);
+  const [image, setImage] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const onInputChanged = useCallback(
     (inputId: string, inputVal: string) => {
@@ -51,6 +51,23 @@ const SignupForm = () => {
     },
     [dispatchFormState],
   );
+
+  useEffect(() => {
+    if (!user) return;
+    const getImage = async () => {
+      try {
+        const { data } = supabase.storage
+          .from("chat-media")
+          .getPublicUrl(`profile-images/${user.userId}.jpg`);
+
+        const imageUrl = data.publicUrl;
+        setImage(imageUrl);
+      } catch (e) {
+        console.log("error fetching image from supabase", e);
+      }
+    };
+    getImage();
+  }, [user]);
 
   useEffect(() => {
     if (!error) return;
@@ -89,6 +106,7 @@ const SignupForm = () => {
   const router = useRouter();
 
   const handleLogout = async () => {
+    await removePushToken(user);
     dispatch(logoutUser() as any);
     router.replace("/(app)/(public)/(auth)/login");
   };
@@ -101,7 +119,7 @@ const SignupForm = () => {
     <ScreenContainer>
       <Text style={styles.heading}>Settings</Text>
       <ScrollView contentContainerStyle={styles.content}>
-        <ProfileImage />
+        <ProfileImage userId={user.userId} savedImage={image} />
         <Input
           id="firstName"
           label="First Name"
