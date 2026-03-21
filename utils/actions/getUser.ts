@@ -15,7 +15,6 @@ export default async function getUser(userId: string) {
   const dbRef = ref(getDatabase(app));
   const childRef = child(dbRef, `users/${userId}`);
   const snapshot = await get(childRef);
-  console.log("snapshot", snapshot);
   return snapshot.val();
 }
 
