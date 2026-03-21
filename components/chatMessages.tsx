@@ -5,14 +5,15 @@ import { getFirebaseApp } from "@/utils/firebaseHelper";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import { child, get, getDatabase, ref, remove, set } from "firebase/database";
-import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSelector } from "react-redux";
 import ChatOption from "./chatOption";
 
 interface Props {
   chatId?: string;
   messageId?: string;
+  mediaUri?: string;
   message: string;
   sentBy?: string;
   repliedToName?: string;
@@ -24,12 +25,15 @@ interface Props {
   chatTextStyles?: object;
   showChatOptions?: number;
   setShowChatOptions?: any;
+  group?: boolean;
+  system?: boolean;
 }
 
 const ChatMessage = ({
   index,
   chatId,
   messageId,
+  mediaUri,
   message,
   sentBy,
   setReplyTo,
@@ -40,14 +44,14 @@ const ChatMessage = ({
   chatTextStyles,
   showChatOptions,
   setShowChatOptions,
+  group,
+  system,
 }: Props) => {
   const user = useSelector((state) => state.auth);
   const chatsData = useSelector((state) => state.chats);
-  const isStarred =
-    chatsData.userStarredMessages &&
-    Object.keys(chatsData.userStarredMessages).length &&
-    chatsData.userStarredMessages[chatId][messageId];
-
+  const isStarred = !!chatsData.userStarredMessages?.[chatId]?.[messageId];
+  const [userData, setUserData] = useState(new Map());
+  console.log("chat", index);
   const handleCopyAction = async (message: string) => {
     await Clipboard.setStringAsync(message);
     setShowChatOptions(false);
@@ -92,14 +96,44 @@ const ChatMessage = ({
     });
     setShowChatOptions(false);
   };
+  mediaUri && console.log("media", mediaUri);
+
+  useEffect(() => {
+    if (userData.has(sentBy ?? "")) return;
+    const fetchUserData = async () => {
+      if (sentBy) {
+        const userDetails = await getUser(sentBy);
+        setUserData((prev) => new Map(prev).set(sentBy, userDetails));
+      }
+    };
+    fetchUserData();
+  }, [sentBy, userData]);
 
   return (
     <Pressable
-      onPress={() => setShowChatOptions(-1)}
-      onLongPress={() => setShowChatOptions(index)}
+      onPress={() => setShowChatOptions?.(-1)}
+      onLongPress={() => setShowChatOptions?.(index)}
       style={{ ...styles.newChatContainer, ...chatContainerStyles }}
     >
       <View style={{ ...chatTextStyles }}>
+        {group && sentBy && (
+          <View style={styles.name}>
+            <Text style={styles.nameText}>
+              {sentBy === user.userData.userId
+                ? "You"
+                : userData.get(sentBy)?.firstName +
+                  " " +
+                  userData.get(sentBy)?.lastName}
+            </Text>
+          </View>
+        )}
+        {mediaUri && (
+          <Image
+            source={{ uri: mediaUri }}
+            style={styles.media}
+            resizeMode="contain"
+          />
+        )}
         {repliedToName && (
           <View style={styles.replyToWrapper}>
             <Text
@@ -125,17 +159,19 @@ const ChatMessage = ({
           }}
         >
           {isStarred && <Ionicons name={"star"} size={10} color={"#333"} />}
-          <Text
-            style={{
-              ...styles.newChatText,
-              ...chatTextStyles,
-              color: colors.grey,
-              fontSize: 10,
-              textAlign: "right",
-            }}
-          >
-            {formatHour(sentAt ?? "")}
-          </Text>
+          {sentAt && !system && (
+            <Text
+              style={{
+                ...styles.newChatText,
+                ...chatTextStyles,
+                color: colors.grey,
+                fontSize: 10,
+                textAlign: "right",
+              }}
+            >
+              {sentAt ? formatHour(sentAt ?? "") : null}
+            </Text>
+          )}
         </View>
       </View>
       {showChatOptions === index && (
@@ -178,7 +214,7 @@ const ChatMessage = ({
   );
 };
 
-export default ChatMessage;
+export default React.memo(ChatMessage);
 
 const styles = StyleSheet.create({
   newChatContainer: {
@@ -209,5 +245,18 @@ const styles = StyleSheet.create({
   replyToText: {
     fontSize: 12,
     fontFamily: "Roboto-Light",
+  },
+  media: {
+    height: 150,
+    width: 150,
+  },
+  name: {
+    padding: 4,
+    paddingBottom: 0,
+  },
+  nameText: {
+    fontFamily: "Roboto-Medium",
+    fontSize: 12,
+    color: colors.blue,
   },
 });

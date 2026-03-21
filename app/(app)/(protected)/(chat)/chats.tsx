@@ -10,6 +10,7 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { useSelector } from "react-redux";
@@ -19,7 +20,6 @@ const Chats = () => {
   const nav = useNavigation();
   const chatsData = useSelector((state) => state.chats);
   const [loading, setLoading] = chatsData.loading;
-  console.log("all chatsData from store", chatsData);
   useEffect(() => {
     nav.setOptions({
       headerShown: true,
@@ -29,7 +29,7 @@ const Chats = () => {
           style={{ marginRight: 16 }}
           onPress={() => router.push("/(app)/(protected)/new-chat")}
         >
-          <Octicons name="plus" size={24} />
+          <Octicons name="search" size={24} />
         </Pressable>
       ),
     });
@@ -65,23 +65,58 @@ const Chats = () => {
     );
   }
 
+  console.log("chatsdatafirst", Object.entries(chatsData.chats)[0][1]);
+
   return (
     <ScreenContainer>
       <Text style={styles.heading}>Chats</Text>
+      <View>
+        <TouchableOpacity
+          onPress={() =>
+            router.navigate({
+              pathname: "/(app)/(protected)/new-chat",
+              params: { groupChat: 1 },
+            })
+          }
+          style={styles.groupContainer}
+        >
+          <Text style={styles.groupText}>Create a group</Text>
+          <Octicons name="plus" size={16} color={colors.blue} />
+        </TouchableOpacity>
+      </View>
       <FlatList
         style={{ marginTop: 16 }}
-        data={Object.values(chatsData.chats)}
+        data={Object.entries(chatsData.chats).sort((a, b) => {
+          const dateA = new Date(
+            a[1].lastMessageTimestamp ?? a[1].lastMessageTimeStamp ?? 0,
+          );
+          const dateB = new Date(
+            b[1].lastMessageTimestamp ?? b[1].lastMessageTimeStamp ?? 0,
+          );
+          return Number(dateB) - Number(dateA);
+        })}
         renderItem={({ item, index, separators }) => {
+          if (!item[0]) return null;
           return (
             <ChatRow
-              key={item.createdAt}
-              participants={item.participants}
-              lastMessage={item.lastMessage}
-              lastMessageTimeStamp={item.lastMessageTimeStamp}
+              key={item[1].createdAt}
+              participants={item[1].participants}
+              lastMessage={item[1].lastMessage}
+              lastMessageTimeStamp={item[1].lastMessageTimeStamp}
+              name={item[1].name}
+              chatData={item}
             />
           );
         }}
-        ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+        ItemSeparatorComponent={() => (
+          <View
+            style={{
+              height: 0.5,
+              // backgroundColor: colors.lightgrey,
+              marginVertical: 9,
+            }}
+          />
+        )}
       />
     </ScreenContainer>
   );
@@ -97,6 +132,22 @@ const styles = StyleSheet.create({
     fontSize: 28,
     marginBottom: 16,
     fontFamily: "Roboto-SemiBold",
+  },
+  groupContainer: {
+    marginVertical: 5,
+    alignItems: "center",
+    flexDirection: "row",
+    columnGap: 10,
+    backgroundColor: "#FFF",
+    elevation: 1,
+    borderRadius: 10,
+    justifyContent: "center",
+    width: 140,
+    padding: 5,
+  },
+  groupText: {
+    fontSize: 16,
+    fontFamily: "Roboto-Medium",
   },
   emptyText: {
     fontSize: 20,

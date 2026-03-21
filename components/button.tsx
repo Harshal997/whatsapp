@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
     marginVertical: 16,
+    padding: 20,
   },
   buttonText: {
     fontFamily: "Roboto-Medium",
