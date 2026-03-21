@@ -1,6 +1,7 @@
 import colors from "@/constants/colors";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
@@ -23,6 +24,13 @@ const Input = (props: Props & TextInputProps) => {
     setValue(text);
     props.onChangeText(props.id, text);
   };
+  useEffect(() => {
+    if (props.id === "mobile") {
+      if (value.length === 10) {
+        Keyboard.dismiss();
+      }
+    }
+  }, [props.id, value]);
   return (
     <View>
       <Text style={styles.lable}>{props.label}</Text>
