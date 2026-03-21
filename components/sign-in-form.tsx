@@ -103,7 +103,7 @@ const SigninForm = () => {
         style={styles.link}
         onPress={() => router.replace("/(app)/(public)/(auth)/signup")}
       >
-        <Text style={styles.linkText}>Switch to Sign in</Text>
+        <Text style={styles.linkText}>Switch to Sign up</Text>
       </Pressable>
     </>
   );
