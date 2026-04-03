@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "90690999379",
+    "firebase_url": "https://whatsapp-c0705-default-rtdb.firebaseio.com",
+    "project_id": "whatsapp-c0705",
+    "storage_bucket": "whatsapp-c0705.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:90690999379:android:a9869c15cf86fc86cde2a6",
+        "android_client_info": {
+          "package_name": "com.harshakl.whatsapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwV66zLxYpye5s69MKXk-R5JAi_E8DuAQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
