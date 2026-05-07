@@ -1,16 +1,17 @@
 import colors from "@/constants/colors";
 import { updateUser } from "@/store/userSlice";
+import { supabase } from "@/supabaseClient";
 import getUser from "@/utils/actions/getUser";
 import { formatTimestamp } from "@/utils/dateUtils";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    Alert,
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -18,34 +19,46 @@ interface Props {
   participants: object;
   lastMessage: string;
   lastMessageTimeStamp: any;
+  name?: string;
+  chatData: [string, unknown];
+  replaceRouteOnPress?: boolean;
 }
 
 const ChatRow = (props: Props) => {
   const currentUser = useSelector((state) => state.auth);
   const router = useRouter();
   const dispatch = useDispatch();
-  const [chattingWithUserDetails, setChatingWithUserDetails] = useState({});
+  const [dp, setDp] = useState<string | null>(null);
+  const [chattingDetails, setChatingDetails] = useState({});
+  const [groupChatData, setGroupChatData] = useState(
+    props.name ? props.chatData : null,
+  );
   const fetchUser = async () => {
-    const chattingWithUser = Object.keys(props.participants).find(
-      (userId) => userId !== currentUser.userData.userId,
+    if (groupChatData) {
+      setChatingDetails({ group: { groupChatData, name: props.name } });
+      return;
+    }
+    const chatting = Object.keys(props.participants).find(
+      (userId) => userId !== currentUser?.userData?.userId,
     );
-    console.log("userIdpart", chattingWithUser);
-    const userDetails = await getUser(chattingWithUser ?? "");
-    setChatingWithUserDetails(userDetails);
+    const userDetails = await getUser(chatting ?? "");
+    setChatingDetails(userDetails);
   };
 
   const handleNavigateChatScreen = async () => {
-    if (!chattingWithUserDetails) {
+    if (!chattingDetails) {
       Alert.alert("", "Unknown error");
     }
-    dispatch(updateUser(chattingWithUserDetails));
+    dispatch(updateUser(chattingDetails));
+    if (props.replaceRouteOnPress) {
+      router.replace("/(app)/(protected)/chat-screen");
+      return;
+    }
     router.navigate({
       pathname: "/(app)/(protected)/chat-screen",
-      params: {
-        newChat: 0,
-        participantUserId: chattingWithUserDetails?.userId,
-        private: 1,
-      },
+      // params: {
+      //   groupChatData,
+      // },
     });
   };
 
@@ -53,7 +66,28 @@ const ChatRow = (props: Props) => {
     fetchUser();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser.userData.userId, props.participants]);
+  }, [currentUser?.userData?.userId, props.participants]);
+
+  useEffect(() => {
+    const getImage = async () => {
+      try {
+        const { data } = supabase.storage
+          .from("chat-media")
+          .getPublicUrl(
+            `profile-images/${props.name ? props.chatData?.[0] : Object.keys(props.participants).filter((id) => id !== currentUser?.userData?.userId)?.[0]}.jpg`,
+          );
+
+        const imageUrl = data.publicUrl;
+        console.log("image url", imageUrl);
+        // if (id) return imageUrl;
+        setDp(imageUrl);
+      } catch (e) {
+        console.log("error fetching image from supabase", e);
+      } finally {
+      }
+    };
+    getImage();
+  }, [props]);
 
   return (
     <TouchableOpacity
@@ -62,13 +96,21 @@ const ChatRow = (props: Props) => {
     >
       <View style={styles.details}>
         <Image
-          source={require("../assets/images/profile-image.jpg")}
+          source={
+            dp
+              ? { uri: dp }
+              : props.name
+                ? require("../assets/images/group-photo.png")
+                : require("../assets/images/profile-image.jpg")
+          }
+          resizeMode="contain"
           style={styles.image}
         />
         <View style={styles.detailContainer}>
           <Text style={styles.nameText}>
-            {chattingWithUserDetails.firstName}{" "}
-            {chattingWithUserDetails.lastName}
+            {props.name
+              ? props.name
+              : chattingDetails.firstName + " " + chattingDetails.lastName}
           </Text>
           <Text style={styles.lastMessageText}>
             {props.lastMessage.length > 25
