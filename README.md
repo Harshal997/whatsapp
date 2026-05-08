@@ -1,50 +1,88 @@
-# Welcome to your Expo app 👋
+# WhatsApp Clone 💬
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A fully functional real-time chat application inspired by WhatsApp, built using React Native and Expo with Firebase-powered realtime messaging and authentication.
 
-## Get started
+The application focuses on delivering a fast, responsive, and modern messaging experience with support for individual chats, group chats, media sharing, and realtime communication.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+# ✨ Features
 
-2. Start the app
+## 🔐 Authentication
+- Firebase Authentication
+- Secure user login/signup flow
+- Persistent sessions
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+# 💬 Real-Time Messaging
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- Instant realtime messaging
+- One-to-one conversations
+- Live message updates
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
+# 📨 Message Features
 
-When you're ready, run:
+Users can:
+- Send text messages
+- Reply to messages
+- Copy messages
+- Star/bookmark important messages
+- Delete messages
+- View message timestamps
 
-```bash
-npm run reset-project
-```
+---
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+# 🖼️ Media Sharing
 
-## Learn more
+Supports:
+- Image sharing
+- Video sharing
+- Media uploads using Supabase Storage (S3)
 
-To learn more about developing your project with Expo, look at the following resources:
+---
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+# 👥 Group Chats
 
-## Join the community
+- Create group chats
+- Add users to groups
+- Remove users from groups
+- Realtime group conversations
 
-Join our community of developers creating universal apps.
+---
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+# 🔔 Push Notifications
+
+Integrated push notification support for:
+- New messages
+
+---
+
+# 📱 Tech Stack
+
+## Frontend
+- React Native
+- Expo
+- TypeScript
+
+## Backend & Services
+- Firebase
+- Firebase Authentication
+- Firestore Realtime Database
+- Supabase Storage (S3)
+
+---
+
+# 🚀 Getting Started
+
+## Prerequisites
+
+Install:
+- Node.js
+- Expo CLI
+- Android Studio / Xcode
+- Git
+
+---
